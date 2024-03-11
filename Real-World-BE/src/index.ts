@@ -3,8 +3,9 @@ import { PrismaClient } from '@prisma/client'
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
+import { cors } from 'hono/cors'
 
-const POSSIBILITY_OF_ERROR = 20 // Percentage
+const POSSIBILITY_OF_ERROR = 5 // Percentage
 const MIN_DELAY = 300
 
 /**Simulate real environment */
@@ -111,6 +112,8 @@ postRoute.delete('/:id', async (c) => {
 
   return c.json({ id })
 })
+
+app.use('*', cors())
 
 app.get('/', (c) => {
   return c.json({
