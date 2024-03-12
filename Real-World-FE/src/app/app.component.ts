@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { environment } from '../environments/environment';
 import { AngularQueryDevtools } from '@tanstack/angular-query-devtools-experimental';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AngularQueryDevtools],
+  imports: [RouterOutlet, AngularQueryDevtools, RouterLink],
   template: `
-    <h1>Medium</h1>
+    <div style="margin-bottom: 20px; font-size: 20px;">
+      <a routerLink="/">Home</a> | <a routerLink="/posts">Posts</a>
+    </div>
     <router-outlet></router-outlet>
     <angular-query-devtools initialIsOpen />
   `,

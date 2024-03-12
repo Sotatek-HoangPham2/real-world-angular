@@ -15,11 +15,25 @@ export class PostService {
   getPostById(id: string) {
     return this.http.get<Post>(`posts/${id}`);
   }
+
+  createPost(data: CreatePost) {
+    return this.http.post('posts', data);
+  }
+
+  updatePost(payload: { id: string; data: CreatePost }) {
+    return this.http.put(`posts/${payload.id}`, payload.data);
+  }
+
+  deletePost(id: string) {
+    return this.http.delete(`posts/${id}`);
+  }
 }
 
 export interface Post {
-  content: string;
+  content?: string;
   id: number;
-  published: boolean;
+  published?: boolean;
   title: string;
 }
+
+export interface CreatePost extends Omit<Post, 'id'> {}

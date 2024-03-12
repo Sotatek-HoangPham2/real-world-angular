@@ -1,16 +1,23 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import {
+  injectMutation,
+  injectQuery,
+  injectQueryClient,
+} from '@tanstack/angular-query-experimental';
 import { PostService } from './data-access/post.service';
-import { PostList } from './ui/post-list.component';
 import { FormsModule } from '@angular/forms';
 import { fromEvent, lastValueFrom, takeUntil } from 'rxjs';
+import { PostListItemComponent } from './ui/post-list-item.component';
 
 @Component({
   selector: 'posts',
   standalone: true,
-  imports: [RouterLink, PostList, FormsModule],
+  imports: [RouterLink, FormsModule, PostListItemComponent],
   template: `
+    <div style="margin-bottom: 20px">
+      <a routerLink="/posts/new">New Post</a>
+    </div>
     <input type="text" placeholder="Search..." [(ngModel)]="q" />
     <div>
       @switch (postsQ.status()) {
@@ -21,23 +28,49 @@ import { fromEvent, lastValueFrom, takeUntil } from 'rxjs';
           Fail To Load
         }
         @case ('success') {
-          <app-post-list [posts]="postsQ.data() || []" />
+          <ul>
+            @for (post of postsQ.data(); track post.id) {
+              <app-post-list-item
+                [post]="post"
+                (delete)="handleDelete($event)"
+              />
+            } @empty {
+              No Post
+            }
+          </ul>
         }
       }
     </div>
   `,
 })
 export default class PostComponent {
-  postService = inject(PostService);
   q = signal('');
 
+  #queryClient = injectQueryClient();
+  #postService = inject(PostService);
+
   postsQ = injectQuery(() => ({
-    queryKey: ['postService.getPosts', this.q()],
+    queryKey: ['PostService', 'getPosts', this.q()],
     queryFn: (context) => {
       const abort$ = fromEvent(context.signal, 'abort');
       return lastValueFrom(
-        this.postService.getPosts({ q: this.q() }).pipe(takeUntil(abort$)),
+        this.#postService.getPosts({ q: this.q() }).pipe(takeUntil(abort$)),
       );
     },
   }));
+
+  deletePostMutation = injectMutation(() => ({
+    mutationFn: (id: number) =>
+      lastValueFrom(this.#postService.deletePost(String(id))),
+  }));
+
+  handleDelete(id: number) {
+    this.deletePostMutation.mutate(id, {
+      onSuccess: () => {
+        return this.#queryClient.invalidateQueries({
+          queryKey: ['PostService'],
+        });
+      },
+    });
+  }
 }

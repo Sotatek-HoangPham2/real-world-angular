@@ -10,7 +10,11 @@ export const routes: Routes = [
     loadComponent: () => import('./posts/posts.component'),
   },
   {
+    path: 'posts/new',
+    loadComponent: () => import('./posts/posts-new.component'),
+  },
+  {
     path: 'posts/:postId',
-    loadComponent: () => import('./posts/posts.id.component'),
+    loadComponent: () => import('./posts/posts-postid.component'),
   },
 ];
