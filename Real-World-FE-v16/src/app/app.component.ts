@@ -1,14 +1,19 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  imports: [RouterOutlet, RouterLink],
+  template: `
+    <div style="margin-bottom: 20px; font-size: 20px;">
+      <a routerLink="/">Home</a> | <a routerLink="/posts">Posts</a>
+    </div>
+    <router-outlet></router-outlet>
+  `,
 })
 export class AppComponent {
-  title = 'Real-World-FE-v16';
+  title = '(16)Real-World-FE';
+  api = environment.apiUrl;
 }
