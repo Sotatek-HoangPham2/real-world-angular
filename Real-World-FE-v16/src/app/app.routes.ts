@@ -10,7 +10,7 @@ export const routes: Routes = [
     loadComponent: () => import('./routes/posts/new/route.component'),
   },
   {
-    path: 'posts/:postId',
+    path: 'posts/:id',
     loadComponent: () => import('./routes/posts/$id/route.component'),
   },
 ];

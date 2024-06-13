@@ -14,7 +14,7 @@ export const routes: Routes = [
     loadComponent: () => import('./posts/posts-new.component'),
   },
   {
-    path: 'posts/:postId',
+    path: 'posts/:id',
     loadComponent: () => import('./posts/posts-postid.component'),
   },
 ];

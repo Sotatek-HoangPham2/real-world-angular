@@ -5,12 +5,12 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { cors } from 'hono/cors'
 
-const POSSIBILITY_OF_ERROR = 5 // Percentage
-const MIN_DELAY = 300
+const POSSIBILITY_OF_ERROR = 0 // Percentage
+const MIN_DELAY = 150
 
 /**Simulate real environment */
 const simulate = async () => {
-  const time = MIN_DELAY + 1000 * Math.random()
+  const time = MIN_DELAY + 300 * Math.random()
 
   await new Promise((resolve) => {
     setTimeout(() => {

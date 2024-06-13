@@ -5,4 +5,4 @@ export interface Post {
   title: string;
 }
 
-export interface CreatePost extends Omit<Post, 'id'> {}
+export interface CreatePostDTO extends Omit<Post, 'id'> {}

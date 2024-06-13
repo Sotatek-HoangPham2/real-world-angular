@@ -1,43 +1,50 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import { debounceTime, distinctUntilChanged } from "rxjs";
-import { PostQuery } from "src/app/routes/posts/_data/post.query";
 
 @Component({
-  selector: "app-post-searchbox",
+  selector: "app-searchbox",
   template: `
     <div>
+      <div>
+        Search
+      </div>
       <input
         type="text"
+        placeholder="Search..."
         [formControl]="searchControl"
       />
-      <button (click)="clearSearch()">Xx</button>
+      <button (click)="clearSearch()">X</button>
     </div>
   `,
   imports: [CommonModule, ReactiveFormsModule],
   standalone: true
 })
-export class PostSearchboxComponent implements OnInit {
-  postQuery = inject(PostQuery);
-  searchControl = new FormControl('');
+export class SearchboxComponent {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute)
 
-  ngOnInit(): void {
-    // sync searchControl with query params and vice versa
-    this.postQuery.postsFilters$.subscribe((filters) => {
-      this.searchControl.setValue(filters.q, { emitEvent: false });
-    });
-
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-    ).subscribe((q) => {
-      this.postQuery.updateSearchFilter(q || '');
-    });
-  }
+  searchControl: FormControl;
 
   clearSearch() {
     this.searchControl.setValue('');
   }
 
+  constructor() {
+    const q = this.route.snapshot.queryParamMap.get('q' || '');
+    this.searchControl = new FormControl(q);
+    this.searchControl.valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      takeUntilDestroyed()
+    ).subscribe(q => {
+      this.router.navigate([], {
+        queryParams: { q },
+        queryParamsHandling: 'merge'
+      })
+    });
+  }
 }
