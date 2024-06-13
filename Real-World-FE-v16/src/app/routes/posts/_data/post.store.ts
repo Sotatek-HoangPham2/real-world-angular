@@ -20,6 +20,7 @@ const initialState: PostState = {
   list: { status: 'initial' },
   detail: { status: 'initial' },
   invalidateToken: Date.now(),
+  mutating: 0,
 };
 
 @Injectable()
@@ -99,7 +100,7 @@ export class PostStore extends ComponentStore<PostState> {
         this.postService.createPost(post).pipe(
           tapResponse({
             next: () => this.invalidate(),
-            error: () => console.error('Error deleting post'),
+            error: () => console.error('Error creating post'),
             finalize: () => this.patchState({ mutating: undefined }),
           })
         )
