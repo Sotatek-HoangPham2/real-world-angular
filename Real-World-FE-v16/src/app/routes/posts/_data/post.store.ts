@@ -56,11 +56,11 @@ export class PostStore extends ComponentStore<PostState> {
           tapResponse({
             next: (data) =>
               this.patchState({
-                list: { status: 'success', error: undefined, data },
+                list: { status: 'success', data },
               }),
             error: (error) =>
               this.patchState({
-                list: { status: 'error', error, data: undefined },
+                list: { status: 'error', error },
               }),
           })
         )
@@ -80,11 +80,11 @@ export class PostStore extends ComponentStore<PostState> {
           tapResponse({
             next: (data) =>
               this.patchState({
-                detail: { status: 'success', error: undefined, data },
+                detail: { status: 'success', data },
               }),
             error: (error) =>
               this.patchState({
-                detail: { status: 'error', error, data: undefined },
+                detail: { status: 'error', error },
               }),
           })
         )
@@ -126,12 +126,12 @@ export class PostStore extends ComponentStore<PostState> {
           tapResponse({
             next: () =>
               this.patchState({
-                delete: { status: 'success', data: id },
+                delete: { status: 'success' },
                 updatedAt: Date.now(),
               }),
             error: () =>
               this.patchState({
-                delete: { status: 'error', data: id },
+                delete: { status: 'error' },
                 updatedAt: Date.now(),
               }),
           })
