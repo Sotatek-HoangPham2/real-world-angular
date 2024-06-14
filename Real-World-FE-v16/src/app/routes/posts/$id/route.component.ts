@@ -20,7 +20,7 @@ import { PostStore } from 'src/app/routes/posts/_data/post.store';
   imports: [CommonModule]
 })
 export default class RouteComponent {
-  @Input() set id(value: string) {
+  @Input() set id(value: string) {  
     this.postStore.getPostById(value)
   }
 

@@ -110,7 +110,6 @@ export class PostStore extends ComponentStore<PostState> {
             error: () =>
               this.patchState({
                 create: { status: 'error' },
-                updatedAt: Date.now(),
               }),
           })
         )
@@ -132,7 +131,6 @@ export class PostStore extends ComponentStore<PostState> {
             error: () =>
               this.patchState({
                 delete: { status: 'error' },
-                updatedAt: Date.now(),
               }),
           })
         )
