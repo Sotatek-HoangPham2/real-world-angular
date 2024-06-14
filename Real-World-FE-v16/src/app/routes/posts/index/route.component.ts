@@ -23,7 +23,10 @@ import { PostFiltersComponent } from 'src/app/routes/posts/index/_ui/post-filter
   providers: [PostStore],
   template: `
     <ng-container *ngIf="vm$ | async as vm">
-      <button (click)="createPost()" [disabled]="vm.mutating">
+      <button
+        (click)="createPost()"
+        [disabled]="vm.create.status === 'loading'"
+      >
         Create Random Post
       </button>
       <hr />
@@ -50,7 +53,9 @@ import { PostFiltersComponent } from 'src/app/routes/posts/index/_ui/post-filter
               *ngFor="let post of vm.list.data"
               [post]="post"
               (delete)="deletePost(post.id)"
-              [isLoading]="vm.mutating === post.id"
+              [isLoading]="
+                vm.delete.status === 'loading' && vm.delete.data === post.id
+              "
             >
               {{ post.title }}
             </app-post-list-item>

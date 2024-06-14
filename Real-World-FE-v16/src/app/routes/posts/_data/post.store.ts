@@ -12,15 +12,18 @@ export interface PostDetailState extends LoadingState<Post> {}
 export interface PostState {
   list: PostListState;
   detail: PostDetailState;
-  invalidateToken: number;
-  mutating?: number;
+  create: PostDetailState;
+  delete: LoadingState<number>;
+  // TODO: update state
+  updatedAt: number;
 }
 
 const initialState: PostState = {
   list: { status: 'initial' },
   detail: { status: 'initial' },
-  invalidateToken: Date.now(),
-  mutating: 0,
+  create: { status: 'initial' },
+  delete: { status: 'initial' },
+  updatedAt: Date.now(),
 };
 
 @Injectable()
@@ -30,23 +33,23 @@ export class PostStore extends ComponentStore<PostState> {
   }
 
   // selectors
-  private readonly invalidateToken$ = this.select(
-    (state) => state.invalidateToken
-  );
+  private readonly updatedAt$ = this.select((state) => state.updatedAt);
   private readonly list$ = this.select((state) => state.list);
   private readonly detail$ = this.select((state) => state.detail);
-  private readonly mutating$ = this.select((state) => state.mutating);
+  private readonly create$ = this.select((state) => state.create);
+  private readonly delete$ = this.select((state) => state.delete);
 
   // view models
   readonly vm$ = this.select({
     list: this.list$,
     detail: this.detail$,
-    mutating: this.mutating$,
+    create: this.create$,
+    delete: this.delete$,
   });
 
   // effects
   readonly getPosts = this.effect<CommonFilters>((filter$) => {
-    return combineLatest([filter$, this.invalidateToken$]).pipe(
+    return combineLatest([filter$, this.updatedAt$]).pipe(
       tap(() =>
         this.patchState((state) => ({
           list: { ...state.list, status: 'loading' },
@@ -70,7 +73,7 @@ export class PostStore extends ComponentStore<PostState> {
   });
 
   readonly getPostById = this.effect<string>((id$) => {
-    return combineLatest([id$, this.invalidateToken$]).pipe(
+    return combineLatest([id$, this.updatedAt$]).pipe(
       tap(() =>
         this.patchState((state) => ({
           detail: { ...state.detail, status: 'loading' },
@@ -95,13 +98,24 @@ export class PostStore extends ComponentStore<PostState> {
 
   readonly createPost = this.effect<CreatePostDTO>((post$) => {
     return post$.pipe(
-      tap(() => this.patchState({ mutating: 1 })),
-      concatMap((post) =>
-        this.postService.createPost(post).pipe(
+      tap(() =>
+        this.patchState((state) => ({
+          create: { status: 'loading' },
+        }))
+      ),
+      concatMap((data) =>
+        this.postService.createPost(data).pipe(
           tapResponse({
-            next: () => this.invalidate(),
-            error: () => console.error('Error creating post'),
-            finalize: () => this.patchState({ mutating: undefined }),
+            next: () =>
+              this.patchState({
+                create: { status: 'success' },
+                updatedAt: Date.now(),
+              }),
+            error: () =>
+              this.patchState({
+                create: { status: 'error' },
+                updatedAt: Date.now(),
+              }),
           })
         )
       )
@@ -110,13 +124,20 @@ export class PostStore extends ComponentStore<PostState> {
 
   readonly deletePost = this.effect<number>((id$) => {
     return id$.pipe(
-      tap((id) => this.patchState({ mutating: id })),
+      tap((id) => this.patchState({ delete: { status: 'loading', data: id } })),
       concatMap((id) =>
         this.postService.deletePost(id).pipe(
           tapResponse({
-            next: () => this.invalidate(),
-            error: () => console.error('Error deleting post'),
-            finalize: () => this.patchState({ mutating: undefined }),
+            next: () =>
+              this.patchState({
+                delete: { status: 'success', data: id },
+                updatedAt: Date.now(),
+              }),
+            error: () =>
+              this.patchState({
+                delete: { status: 'error', data: id },
+                updatedAt: Date.now(),
+              }),
           })
         )
       )
@@ -125,6 +146,6 @@ export class PostStore extends ComponentStore<PostState> {
 
   // methods
   invalidate() {
-    this.patchState({ invalidateToken: Date.now() });
+    this.patchState({ updatedAt: Date.now() });
   }
 }

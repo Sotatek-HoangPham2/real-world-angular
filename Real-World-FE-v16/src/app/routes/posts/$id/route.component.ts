@@ -7,12 +7,12 @@ import { PostStore } from 'src/app/routes/posts/_data/post.store';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div *ngIf="vm$ | async as vm" >
-      <div *ngIf="vm.detail.status === 'loading'">Loading...</div>
-      <div *ngIf="vm.detail.status === 'error'">Error!</div>
-      <div *ngIf="vm.detail.status === 'success'">
-        <h1>{{vm.detail.data?.title}}</h1>
-        <p>{{vm.detail.data?.content}}</p>
+    <div *ngIf="(vm$ | async)?.detail as detail" >
+      <div *ngIf="detail.status === 'loading'">Loading...</div>
+      <div *ngIf="detail.status === 'error'">Error!</div>
+      <div *ngIf="detail.status === 'success'">
+        <h1>{{detail.data?.title}}</h1>
+        <p>{{detail.data?.content}}</p>
       </div>
     </div>
   `,
