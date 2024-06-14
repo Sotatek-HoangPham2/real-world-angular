@@ -71,8 +71,8 @@ export class PostStore extends ComponentStore<PostState> {
   readonly getPostById = this.effect<string>((id$) => {
     return combineLatest([id$, this.updatedAt$]).pipe(
       tap(() =>
-        this.patchState((state) => ({
-          detail: { ...state.detail, status: 'loading' },
+        this.patchState(() => ({
+          detail: { status: 'loading' },
         }))
       ),
       switchMap(([id]) =>
@@ -95,7 +95,7 @@ export class PostStore extends ComponentStore<PostState> {
   readonly createPost = this.effect<CreatePostDTO>((post$) => {
     return post$.pipe(
       tap(() =>
-        this.patchState((state) => ({
+        this.patchState(() => ({
           create: { status: 'loading' },
         }))
       ),
