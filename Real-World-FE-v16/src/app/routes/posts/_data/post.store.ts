@@ -5,14 +5,10 @@ import { CreatePostDTO, Post } from 'src/app/routes/posts/_data/post.model';
 import { PostService } from 'src/app/routes/posts/_data/post.service';
 import { CommonFilters, LoadingState } from 'src/app/shared/model/common';
 
-export interface PostListState extends LoadingState<Array<Post>> {}
-
-export interface PostDetailState extends LoadingState<Post> {}
-
 export interface PostState {
-  list: PostListState;
-  detail: PostDetailState;
-  create: PostDetailState;
+  list: LoadingState<Array<Post>>;
+  detail: LoadingState<Post>;
+  create: LoadingState<Post>;
   delete: LoadingState<number>;
   // TODO: update state
   updatedAt: number;

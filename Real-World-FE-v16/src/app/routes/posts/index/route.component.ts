@@ -85,10 +85,6 @@ export default class RouteComponent implements OnInit {
     this.postStore.getPosts(this.params$);
   }
 
-  invalidate() {
-    this.postStore.invalidate();
-  }
-
   createPost() {
     this.postStore.createPost({
       title: faker.lorem.words(),
